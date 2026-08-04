@@ -1,6 +1,6 @@
 interface:
   display_name: "GAS Sheets App Builder"
-  short_description: "Guide beginners through a new Sheets-bound GAS app"
-  default_prompt: "Use $gas-sheets-app-builder to guide me through creating a new Sheets-bound GAS app from my reference sheet, Drive folder, and requirements."
+  short_description: "Build a beginner's first working Sheets-bound GAS app"
+  default_prompt: "Use $gas-sheets-app-builder to build and run my first Sheets-bound GAS app from my reference sheet, Drive folder, and requirements."
 policy:
   allow_implicit_invocation: false
