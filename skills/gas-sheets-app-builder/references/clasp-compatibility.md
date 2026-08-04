@@ -44,23 +44,24 @@ Windowsでは`node_modules\.bin\clasp.cmd`を指定できる。出力されるJS
 
 同じメジャー版でも別名やオプションが変わり得るため、表より事前診断結果を優先する。
 
-## `--parentId`の正しい意味
+## 指定フォルダへ直接作成する
 
 `--parentId`は保存先Driveフォルダではない。作成するApps Scriptを既存のGoogle Sheets、Docs、Slides、FormsファイルへバインドするためのファイルIDである。
 
-- 新規スプレッドシートも作る: `--type sheets --title "<アプリ名>"`を使う。作成後、Drive APIなどで指定フォルダへ移動する。
-- 既存スプレッドシートへバインドする: `--parentId <既存スプレッドシートID> --title "<アプリ名>"`を使い、`--type`は付けない。
+- Drive API `files.create`で`name`、`mimeType: application/vnd.google-apps.spreadsheet`、`parents: [<作業フォルダID>]`を同時に指定し、作業フォルダ直下へSheetを直接作る。
+- 作成結果の`parents`を検証してから、`--parentId <作成したスプレッドシートID> --title "<アプリ名>"`でScriptをバインドする。`--type`は付けない。
 - DriveフォルダIDを`--parentId`へ渡さない。
+- `clasp create --type sheets`で別場所へ作ってから移動しない。直接作成できなければ停止する。
 
-作成前に`.clasp.json`、対象フォルダ、同名ファイルを確認する。作成後は出力からScript IDとコンテナIDを記録し、Driveの親フォルダをメタデータで確認する。
+`scripts/create_bound_sheet_in_folder.mjs`はローカルclaspの認証を再利用して、この作成・親検証・バインドを連続実行する。作成前に`.clasp.json`、対象フォルダ、同名ファイルを確認する。作成後はScript ID、Sheet ID、親フォルダIDを記録する。
 
 ## 認可と起動確認
 
 1. ログイン状態を読み取り専用コマンドで確認する。
 2. 最小構成をpushする。
-3. Drive移動・リネーム・参照シート読取に必要なUI非依存の初期設定関数をApps Scriptエディタから実行する。この関数には`getUi()`、`alert()`、ダイアログ表示を含めず、結果はreturn値やログで確認する。メニュー通知は別のラッパー関数へ分離する。
+3. 参照シート読取に必要なUI非依存の認可関数をApps Scriptエディタから実行する。この関数には`getUi()`、`alert()`、ダイアログ表示を含めず、結果はreturn値やログで確認する。メニュー通知は別のラッパー関数へ分離する。
 4. OAuth同意画面や未確認アプリの警告が出たらユーザー本人に引き継ぐ。
-5. 認可後に初期設定関数を再実行し、Driveの親、名前、先頭タブ名を確認する。
+5. 認可後に設定関数を再実行し、名前と先頭タブ名を確認する。親フォルダは作成直後のDrive APIメタデータで確認する。
 6. コンテナを再読み込みしてメニューとUIを実機確認する。
 
 `onOpen()`はメニュー登録だけに限定し、認可が必要なサービスやファイル書き込みを呼ばない。再読み込み後もメニューが出ない場合は、対象スプレッドシートの「拡張機能 → Apps Script」から開いたエディタでScript IDを照合し、そのコンテナ文脈から`onOpen()`を一度実行する。
