@@ -1,0 +1,4 @@
+interface:
+  display_name: "GAS Sheets App Builder"
+  short_description: "Build GAS spreadsheet apps from source URLs"
+  default_prompt: "Use $gas-sheets-app-builder to create a bound Google Sheets Apps Script app from my reference sheet, Drive folder, and requirements."

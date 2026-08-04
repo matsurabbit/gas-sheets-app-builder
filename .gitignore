@@ -1,0 +1,7 @@
+.DS_Store
+Thumbs.db
+.clasprc.json
+.clasp.json
+node_modules/
+__pycache__/
+*.pyc
